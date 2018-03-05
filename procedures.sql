@@ -116,7 +116,29 @@ $$LANGUAGE 'plpgsql';
 CREATE OR REPLACE function SortiePossible(dd date, df date) RETURNS boolean AS
 --{} => {résultat = vrai si au moins un bateau, un skipper et 4 autres membres sont
 --       disponibles de dd à df (comprises)}
+$$
+declare
+  numequi numeric(4);
+begin
+  if df < dd then
+    raise exception 'les dates ne sont pas dans le bon ordre!';
+  end if;
+  select numadh from adherent where skipper = 'oui' and MembreDispo(numadh, dd, df);
+  if not found then
+    return false;
+  end if;
 
+  select numbat from bateau where BateauDispo(numbat, dd, df);
+  if not found then
+    return false;
+  end if;
+
+  select count(numadh) into numequi from adherent where skipper = 'non' and MembreDispo(numadh, dd, df);
+
+  return numequi >= 4;
+
+end;
+$$LANGUAGE 'plpgsql';
 
 
 
