@@ -138,16 +138,33 @@ based114=> select numbat, nombat, nbplaces from bateau where bateaudispo(numbat,
 --------------------------
 
 -- Parmi les skippers, qui sera disponible pour encadrer une activité prévue entre le 8 et le 15 août 2108 ?
-based114=> select nom from adherent where skipper = 'oui'
+based114=> select numadh,nom,skipper from adherent where skipper = 'oui'
 and membredispo(numadh, '8/8/2018', '15/8/2018');
-  nom
---------
- rondet
- merlu
-(2 rows)
+ numadh |  nom   | skipper
+--------+--------+---------
+     10 | rondet | oui
+(1 row)
 
 -- Quels sont les adhérents (numéro, nom, téléphone) qui pourraient être équipiers de rondet pour une activité prévue entre le 8 et le 15 août 2018?
-
+based114=> select numadh, nom, telephone
+from adherent
+where membredispo(numadh, '8/8/2018','15/8/2018')
+based114-> and skipper = 'non';
+ numadh |   nom    | telephone
+--------+----------+------------
+      3 | boucher  | 0476152360
+      4 | michal   | 0476451252
+      7 | frantz   | 0476531278
+      8 | colin    | 0476531237
+      9 | boulle   | 0476531586
+     11 | garnier  | 0476852130
+     12 | bar      | 0476535678
+     14 | crevette | 0476458293
+     15 | morue    | 0476349725
+     16 | saumon   | 0476482497
+     17 | limande  | 0476165874
+     18 | turbot   | 0476462597
+     19 | cr
 
 
 --------------------------------------------------------------------------------
