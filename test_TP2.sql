@@ -180,9 +180,19 @@ based114-> and skipper = 'non';
 --------------------------
 
 -- Est-il possible de prévoir une sortie sur la journée du 2 septembre 2018 ?
+based114=> select sortiepossible('2/9/2018', '2/9/2018');
+ sortiepossible
+----------------
+ f
+(1 row)
 
 
 -- Est-il possible de prévoir une sortie du 8 au 15 août 2018 ?
+based114=> select sortiepossible('8/8/2018', '15/8/2018');
+ sortiepossible
+----------------
+ t
+(1 row)
 
 
 
