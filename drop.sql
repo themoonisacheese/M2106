@@ -1,6 +1,8 @@
 -- triggers TP3
 
 -- procédures TP2
+drop function if exists Participations(in numa numeric,out nbsorties numeric, out nbrallyes numeric);
+drop function if exists SortiePossible(dd date, df date) RETURNS boolean;
 drop function if exists MembreDispo(nadh numeric, dd date, df date) RETURNS boolean;
 drop function if exists BateauDispo(nbat numeric, dd date, df date) RETURNS boolean;
 drop function if exists Disjonction(dd1 date, df1 date, dd2 date, df2 date) RETURNS boolean;
