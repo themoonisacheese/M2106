@@ -96,6 +96,17 @@ begin
       return false;
     end if;
   end loop;
+
+  for nact in select numact from chefdebord where numadh = nadh loop
+    select datedebut, datefin into deb, fin
+      from activite
+      where numact = nact;
+
+    if not(Disjonction(dd,df,deb::date, fin::date)) then
+      return false;
+    end if;
+  end loop;
+
   return true;
 end;
 $$LANGUAGE 'plpgsql';
