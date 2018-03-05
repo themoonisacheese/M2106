@@ -123,12 +123,12 @@ begin
   if df < dd then
     raise exception 'les dates ne sont pas dans le bon ordre!';
   end if;
-  select numadh from adherent where skipper = 'oui' and MembreDispo(numadh, dd, df);
+  perform numadh from adherent where skipper = 'oui' and MembreDispo(numadh, dd, df);
   if not found then
     return false;
   end if;
 
-  select numbat from bateau where BateauDispo(numbat, dd, df);
+  perform numbat from bateau where BateauDispo(numbat, dd, df);
   if not found then
     return false;
   end if;
