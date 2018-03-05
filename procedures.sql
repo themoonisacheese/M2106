@@ -153,7 +153,11 @@ CREATE OR REPLACE function Participations(in numa numeric,
 --		{nbsorties = nombre de sorties terminées auxquelles numa a participé,
 --		 nbrallyes = nombre de rallyes terminés auxquels numa a participé}
 
+$$
+begin
 
+end;
+$$LANGUAGE 'plpgsql';
 
 
 -----------------------------------------------------------------------
@@ -168,6 +172,12 @@ CREATE OR REPLACE function EnregResultats(numra numeric, numre numeric, numb num
 --		{si le rallye n'est pas terminé ou s'il a moins de numre régates, ou encore si le bateau numb
 -- 	 n'a pas participé à ce rallye, une exception est levée
 --		 sinon, les points obtenus sont calculés et affichés et la table résultat est mise à jour}
+
+$$
+begin
+
+end;
+$$LANGUAGE 'plpgsql';
 
 
 
@@ -186,6 +196,12 @@ CREATE OR REPLACE function Insregates(nact numeric, nbreg numeric) RETURNS void 
 --		 sinon des exceptions sont levées}
 
 
+$$
+begin
+
+end;
+$$LANGUAGE 'plpgsql';
+
 
 
 
@@ -196,6 +212,12 @@ CREATE OR REPLACE function Insregates(nact numeric, nbreg numeric) RETURNS void 
 --		 sinon des exceptions sont levées}
 
 
+
+$$
+begin
+
+end;
+$$LANGUAGE 'plpgsql';
 
 
 
@@ -211,6 +233,12 @@ CREATE OR REPLACE function InfosEquipiers(numa numeric, numb numeric) RETURNS TA
 --		 inscrit comme équipier du bateau numb pour l'activité numa}
 
 
+$$
+begin
+
+end;
+$$LANGUAGE 'plpgsql';
+
 
 
 -----------------------------------------------------------------------
@@ -219,6 +247,12 @@ CREATE OR REPLACE function InfosEquipiers(numa numeric, numb numeric) RETURNS TA
 CREATE OR REPLACE function ListActNextWeek() RETURNS SETOF numeric AS
 -- {} => {résultat = liste de numéros d'activités dont la date de début est comprise entre J+7 et
 --			 J+13 au sens large}
+
+$$
+begin
+
+end;
+$$LANGUAGE 'plpgsql';
 
 
 
@@ -285,6 +319,12 @@ CREATE OR REPLACE function ControleBat(numa numeric)
 
 
 
+$$
+begin
+
+end;
+$$LANGUAGE 'plpgsql';
+
 
 
 -----------------------------------------------------------------------
@@ -293,6 +333,12 @@ CREATE OR REPLACE function ControleBat(numa numeric)
 CREATE OR REPLACE function MonPlanning() RETURNS void AS
 --{} => {affiche les informations sur les activités futures auxquelles le membre connecté est inscrit
 --			les informations sont triées par ordre chronologique sur la date de début}
+
+$$
+begin
+
+end;
+$$LANGUAGE 'plpgsql';
 
 
 
@@ -312,6 +358,12 @@ CREATE OR REPLACE function PrepAnnulation() RETURNS void AS
 --				un message est affiché pour chaque bateau dont la participation doit être annulée, il
 --				précise le prénom, le nom et le numéro de téléphone du chef de bord ainsi que le prénom, le nom et
 --				le numéro de téléphone de chaque membre d'équipage}
+
+$$
+begin
+
+end;
+$$LANGUAGE 'plpgsql';
 
 
 
