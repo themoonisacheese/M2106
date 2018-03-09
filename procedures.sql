@@ -154,16 +154,32 @@ CREATE OR REPLACE function Participations(in numa numeric,
 --		 nbrallyes = nombre de rallyes terminés auxquels numa a participé}
 
 $$
+declare
+  nbequip numeric(3);
 begin
-  select count(numact) into nbsorties from equipage
+  select count(numact) into nbequip from equipage
     where numadh = numa
     and numact in (select numact from activite where typeact = 'sortie')
     and numact not in (select numact from VActivitesFutures);
 
-  select count(numact) into nbrallyes from equipage
+  select count(numact) into nbsorties from chefdebord
+    where numadh = numa
+    and numact in (select numact from activite where typeact = 'sortie')
+    and numact not in (select numact from VActivitesFutures);
+
+  nbsorties := nbsorties + nbequip;
+
+  select count(numact) into nbequip from equipage
     where numadh = numa
     and numact in (select numact from activite where typeact = 'rallye')
     and numact not in (select numact from VActivitesFutures);
+
+  select count(numact) into nbrallyes from chefdebord
+    where numadh = numa
+    and numact in (select numact from activite where typeact = 'rallye')
+    and numact not in (select numact from VActivitesFutures);
+
+  nbrallyes := nbrallyes + nbequip;
 
 end;
 $$LANGUAGE 'plpgsql';

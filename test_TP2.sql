@@ -215,9 +215,37 @@ ________________________________________________________________________________
 --------------------------
 
 -- Participations passées de merlu
+based114=> select * from participations((select numadh from adherent where nom = 'merlu'));
+ nbsorties | nbrallyes
+-----------+-----------
+         1 |         2
+(1 row)
 
 
 -- Nom et participations passées de tous les adhérents
+based114=> select nom, nbrallyes, nbsorties from adherent, participations(numadh);
+   nom    | nbrallyes | nbsorties
+----------+-----------+-----------
+ aflau    |         2 |         1
+ maire    |         2 |         2
+ boucher  |         2 |         2
+ michal   |         2 |         2
+ guy      |         2 |         2
+ rousseau |         2 |         2
+ frantz   |         2 |         2
+ colin    |         2 |         2
+ boulle   |         2 |         2
+ rondet   |         2 |         2
+ garnier  |         2 |         1
+ bar      |         2 |         1
+ merlu    |         2 |         1
+ crevette |         1 |         1
+ morue    |         1 |         0
+ saumon   |         0 |         0
+ limande  |         0 |         0
+ turbot   |         1 |         0
+ crabe    |         1 |         0
+(19 rows)
 
 
 
