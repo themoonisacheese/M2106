@@ -226,10 +226,6 @@ begin
 end;
 $$LANGUAGE 'plpgsql';
 
-
-
-
-
 -----------------------------------------------------------------------
 -- Création automatisée de nouvelles régates pour un rallye
 -- version 1
@@ -242,10 +238,23 @@ CREATE OR REPLACE function Insregates(nact numeric, nbreg numeric) RETURNS void 
 --		{si nact est bien le numéro d'un ralllye terminé, nbreg régates ont été créées
 --		 sinon des exceptions sont levées}
 
-
 $$
+declare
+i int;
 begin
 
+  if(nact not in (select numact from vactivitesfutures)) then
+    raise exception 'L''activite % est deja passee ou n''existe pas', nact;
+  end if;
+
+  if((select typeact from Vactivitesfutures where numact = nact) <> 'rallye')then
+    raise exception 'L''activite % n''est pas un rallye', nact;
+  end if;
+
+  for i in 1..nbreg loop
+    insert into REGATE values(nact,i,null);
+  end loop;
+  raise notice '% regates crees.', i;
 end;
 $$LANGUAGE 'plpgsql';
 
