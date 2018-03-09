@@ -265,30 +265,72 @@ based114=> select nom, nbrallyes, nbsorties from adherent, participations(numadh
 -- Instructions à exécuter (une par une) :
 SELECT EnregResultats(2,5,1,1);
 
+based114=> SELECT EnregResultats(2,5,1,1);
+ERROR:  Ce rallye ne comporte pas autant de regates
+CONTEXT:  PL/pgSQL function enregresultats(numeric,numeric,numeric,numeric) line 13 at RAISE
 
 SELECT EnregResultats(2,1,1,1);
+ERROR:  Le bateau 1 n'a pas participe a ce rallye'
+CONTEXT:  PL/pgSQL function enregresultats(numeric,numeric,numeric,numeric) line 17 at RAISE
 
 
 SELECT EnregResultats(5,1,4,1);
 
+NOTICE:  Le bateau 4 a obtenu 5 points a la regate 1 du rallye 5
+ enregresultats
+----------------
+
+(1 row)
 
 SELECT EnregResultats(5,1,5,2);
+NOTICE:  Le bateau 5 a obtenu 3 points a la regate 1 du rallye 5
+ enregresultats
+----------------
+
+(1 row)
+
 
 
 SELECT EnregResultats(5,2,4,2);
+NOTICE:  Le bateau 4 a obtenu 3 points a la regate 2 du rallye 5
+ enregresultats
+----------------
+
+(1 row)
 
 
 SELECT EnregResultats(5,2,5,1);
 
+NOTICE:  Le bateau 5 a obtenu 5 points a la regate 2 du rallye 5
+ enregresultats
+----------------
+
+(1 row)
 
 SELECT EnregResultats(5,3,4,999);
+NOTICE:  Le bateau 4 a obtenu 0 points a la regate 3 du rallye 5
+ enregresultats
+----------------
 
+(1 row)
 
 SELECT EnregResultats(5,3,5,1);
+NOTICE:  Le bateau 5 a obtenu 5 points a la regate 3 du rallye 5
+ enregresultats
+----------------
+
+(1 row)
 
 
 -- Vérification : total des points obtenus par chaque bateau ayant concouru aux régates du rallye 5
 
+based114=> select numbat, sum(points) from resultat where numact = 5
+group by numbat;
+ numbat | sum 
+--------+-----
+      4 |   8
+      5 |  13
+(2 rows)
 
 
 --------------------------------------------------------------------------------

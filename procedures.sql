@@ -201,6 +201,28 @@ CREATE OR REPLACE function EnregResultats(numra numeric, numre numeric, numb num
 $$
 begin
 
+  if((select typeact from activite where numact = numra)<>'rallye')then
+    raise exception 'L''activite % n''est pas un rallye', numra;
+  end if;
+
+  if((select datefin from activite where numact = numra)::date>now())then
+    raise exception 'Ce rallye n''est pas encore termine';
+  end if;
+
+  if((select count(numregate) from regate where numact = numra) < numre)then
+    raise exception 'Ce rallye ne comporte pas autant de regates';
+  end if;
+
+  if(numb not in (select numbat from chefdebord where numact = numra))then
+    raise exception 'Le bateau % n''a pas participe a ce rallye', numb;
+  end if;
+
+  update resultat set points = (5/place)*(least(place,3)/place)
+    where numbat = numb
+    and numact = numra
+    and numregate = numre;
+
+    raise notice 'Le bateau % a obtenu % points a la regate % du rallye %', numb, (5/place)*(least(place,3)/place), numre, numra;
 end;
 $$LANGUAGE 'plpgsql';
 

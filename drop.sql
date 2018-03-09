@@ -1,6 +1,7 @@
 -- triggers TP3
 
 -- procédures TP2
+drop function if exists EnregResultats(numra numeric, numre numeric, numb numeric, place numeric);
 drop function if exists Participations(in numa numeric,out nbsorties numeric, out nbrallyes numeric);
 drop function if exists SortiePossible(dd date, df date);
 drop function if exists MembreDispo(nadh numeric, dd date, df date);
