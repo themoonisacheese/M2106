@@ -326,7 +326,7 @@ NOTICE:  Le bateau 5 a obtenu 5 points a la regate 3 du rallye 5
 
 based114=> select numbat, sum(points) from resultat where numact = 5
 group by numbat;
- numbat | sum 
+ numbat | sum
 --------+-----
       4 |   8
       5 |  13
@@ -347,18 +347,36 @@ group by numbat;
 
 -- Tentative d'insertion de trois régates pour l'activité 11
 
-
+based114=> select Insregates(11,3);
+ERROR:  L'activite 11 n'est pas un rallye
+CONTEXT:  PL/pgSQL function insregates(numeric,numeric) line 11 at RAISE
 -- Tentative d'insertion de trois régates pour l'activité 5
-
+based114=> select Insregates(5,3);
+ERROR:  L'activite 5 est deja passee ou n'existe pas
+CONTEXT:  PL/pgSQL function insregates(numeric,numeric) line 7 at RAISE
 
 -- Création d'une nouvelle activité de type rallye se déroulant à Pino sur la journée du 1er octobre 2018
-
+based114=> insert into activite values(14,'rallye','Pino','Pino','2018-10-01');
+INSERT 0 1
 
 -- Insertion de trois régates pour l'activité 14 (numéro de la nouvelle activité)
+based114=> select InsRegates(14,3);
+NOTICE:  regate 1 cree
+NOTICE:  regate 2 cree
+NOTICE:  regate 3 cree
+ insregates
+------------
 
+(1 row)
 
 -- Vérification : affichage des régates de l'activité 14 (résultats ordonnés sur le numéro de régate)
-
+based114=> select * from regate where numact = 14 order by numregate asc;
+ numact | numregate | forcevent
+--------+-----------+-----------
+     14 |         1 |
+     14 |         2 |
+     14 |         3 |
+(3 rows)
 
 --------------------------------------
 -- Version BONUS
@@ -376,9 +394,24 @@ group by numbat;
 -- Tests de la fonction InsRegates version BONUS (ne pas remplir si non traité)
 -------------------------------------------------------------------------------
 -- Insertion de deux nouvelles régates pour l'activité 14
+based114=> select Insregates(14,2);
+NOTICE:  regate 4 cree
+NOTICE:  regate 5 cree
+ insregates
+------------
 
+(1 row)
 
 -- Vérification : affichage des régates de l'activité 14 (résultats ordonnés sur le numéro de régate)
+based114=> select * from regate where numact = 14 order by numregate asc;
+ numact | numregate | forcevent
+--------+-----------+-----------
+     14 |         1 |
+     14 |         2 |
+     14 |         3 |
+     14 |         4 |
+     14 |         5 |
+(5 rows)
 
 
 
@@ -400,7 +433,15 @@ ________________________________________________________________________________
 --------------------------
 
 -- Informations sur les membres d'équipage du bateau 2 pour l'activité 13
-
+based114=> select * from infosequipiers(13,2);
+ nadh |    pr     |   nm    |    tel
+------+-----------+---------+------------
+    1 | jean      | aflau   | 0476441250
+    2 | pierre    | maire   | 0476501265
+    3 | anne      | boucher | 0476152360
+    4 | veronique | michal  | 0476451252
+    5 | fabien    | guy     | 0476441250
+(5 rows)
 
 --------------------------------------------------------------------------------
 -- Q2 : Numéro des activités commençant entre J+7 et J+13

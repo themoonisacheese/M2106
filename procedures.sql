@@ -237,7 +237,6 @@ CREATE OR REPLACE function Insregates(nact numeric, nbreg numeric) RETURNS void 
 -- il n'y a aucune régate déjà créée pour cette activité} =>
 --		{si nact est bien le numéro d'un ralllye terminé, nbreg régates ont été créées
 --		 sinon des exceptions sont levées}
-
 $$
 declare
 i int;
@@ -253,8 +252,8 @@ begin
 
   for i in 1..nbreg loop
     insert into REGATE values(nact,i,null);
+    raise notice 'regate % cree', i;
   end loop;
-  raise notice '% regates crees.', i;
 end;
 $$LANGUAGE 'plpgsql';
 
@@ -266,13 +265,31 @@ CREATE OR REPLACE function Insregates(nact numeric, nbreg numeric) RETURNS void 
 --{nact est le numéro d'une activité, nbreg est le nombre de régates à créer} =>
 --		{si nact est bien le numéro d'un ralllye terminé, nbreg régates ont été créées
 --		 sinon des exceptions sont levées}
-
-
-
 $$
-begin
+  declare i int;
+    nb int;
+  begin
+    if(nact not in (select numact from vactivitesfutures)) then
+      raise exception 'L''activite % est deja passee ou n''existe pas', nact;
+    end if;
 
-end;
+    if((select typeact from Vactivitesfutures where numact = nact) <> 'rallye')then
+      raise exception 'L''activite % n''est pas un rallye', nact;
+    end if;
+
+    select numregate into nb
+      from regate where numact = nact
+      order by numregate desc
+      limit 1;
+    if not found then
+      nb := 0;
+    end if;
+    nb := nb+1;
+    for i in nb..nb+nbreg-1 loop
+      insert into REGATE values(nact,i,null);
+      raise notice 'regate % cree', i;
+    end loop;
+  end;
 $$LANGUAGE 'plpgsql';
 
 
@@ -282,7 +299,8 @@ $$LANGUAGE 'plpgsql';
 -- Information sur les membres inscrits comme équipiers sur un bateau
 -- pour une activité donnée
 -----------------------------------------------------------------------
-CREATE OR REPLACE function InfosEquipiers(numa numeric, numb numeric) RETURNS TABLE(nadh numeric, pr varchar, nm varchar, tel varchar) AS
+CREATE OR REPLACE function InfosEquipiers(numa numeric, numb numeric)
+  RETURNS TABLE(nadh numeric, pr varchar, nm varchar, tel varchar) AS
 --{numa est le numéro d'une activité, numb est le numéro d'un bateau} =>
 --		{le résultat est une table où dans chaque ligne :
 --		 nadh est le numéro, pr est le prénom, nm est le nom, tel est le téléphone d'un membre
@@ -290,8 +308,16 @@ CREATE OR REPLACE function InfosEquipiers(numa numeric, numb numeric) RETURNS TA
 
 
 $$
+declare
 begin
-
+  return query(select numadh, prenom, nom, telephone
+                from adherent
+                where numadh in (select numadh from equipage
+                                  where numact = numa
+                                  and numbat = numb)
+                or numadh = (select numadh from chefdebord
+                              where numact = numa
+                              and numbat = numb));
 end;
 $$LANGUAGE 'plpgsql';
 
