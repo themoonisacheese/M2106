@@ -221,6 +221,10 @@ begin
     where numbat = numb
     and numact = numra
     and numregate = numre;
+  update resultat set classement = place
+    where numbat = numb
+    and numact = numra
+    and numregate = numre;
 
     raise notice 'Le bateau % a obtenu % points a la regate % du rallye %', numb, (5/place)*(least(place,3)/place), numre, numra;
 end;
