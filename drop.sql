@@ -1,6 +1,7 @@
 -- triggers TP3
 
 -- procédures TP2
+drop function if exists ListActNextWeek();
 drop function if exists InfosEquipiers(numa numeric, numb numeric);
 drop function if exists Insregates(nact numeric, nbreg numeric);
 drop function if exists EnregResultats(numra numeric, numre numeric, numb numeric, place numeric);

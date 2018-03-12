@@ -332,7 +332,10 @@ CREATE OR REPLACE function ListActNextWeek() RETURNS SETOF numeric AS
 
 $$
 begin
-
+  return query(select numact
+                from activite
+                where datedebut::date >= (now()+interval '7 days')
+                and datedebut::date <= (now()+interval '13 days'));
 end;
 $$LANGUAGE 'plpgsql';
 

@@ -513,7 +513,13 @@ INSERT INTO equipage SELECT
 ----------------------------------------
 -- Numéros des activités commençant entre J+7 et J+13
 SELECT * FROM ListActNextWeek();
-
+ listactnextweek
+-----------------
+              14
+              15
+              16
+              17
+(4 rows)
 
 --------------------------------------------------------------------------------
 -- Q3 : Suivi des activités futures
