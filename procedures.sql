@@ -312,7 +312,6 @@ CREATE OR REPLACE function InfosEquipiers(numa numeric, numb numeric)
 
 
 $$
-declare
 begin
   return query(select numadh, prenom, nom, telephone
                 from adherent
@@ -406,11 +405,30 @@ CREATE OR REPLACE function ControleBat(numa numeric)
 -- OK => au moins 5 membres sont inscrits sur le bateau numb pour l'activité numa
 -- INCOMPLET => moins de 5 membres sont inscrits sur le bateau numb pour l'activité numa}
 
-
-
 $$
+declare
+  nb int;
 begin
+  for nb in select numbat from bateau loop
+    if exists(select numadh from chefdebord where numbat = nb and numact = numa) then
+      select count(*)+1 into nbinsc
+        from equipage
+        where numbat = nb
+        and numact = numa;
+        places := (select nbplaces from bateau where numbat = nb) - nbinsc;
+        numb := nb;
+        select count(numadh) into nbdispo from adherent where MembreDispo(numadh,(select datedebut from activite where numact = numa),(select datefin from activite where numact = numa));
 
+        if nbinsc>=5 then
+          etat := 'OK';
+        else
+          etat := 'INCOMPLET';
+        end if;
+
+        return next;
+      end if;
+  end loop;
+  return;
 end;
 $$LANGUAGE 'plpgsql';
 

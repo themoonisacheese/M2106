@@ -529,7 +529,14 @@ SELECT * FROM ListActNextWeek();
 
 -- exécuter l'instruction ci-dessous :
 SELECT * FROM EtatActNextWeek();
-
+based114=> SELECT * FROM EtatActNextWeek();
+ num | nature |     dd     |     df     |     etat
+-----+--------+------------+------------+--------------
+  14 | sortie | 2018-03-20 | 2018-03-22 | PBM
+  15 | rallye | 2018-03-22 | 2018-03-22 | PBM
+  16 | sortie | 2018-03-24 | 2018-03-24 | SANS SKIPPER
+  17 | sortie | 2018-03-25 | 2018-03-25 | RAS
+(4 rows)
 -- compléter le fichier procedures.sql avec le code de la fonction ControleBat
 -- exécuter les instructions de création de cette fonction
 -- compléter le fichier drop.sql avec l'instruction de suppression de cette fonction
@@ -545,7 +552,15 @@ SELECT numact, e.numb, e.nbinsc, e.places, e.nbdispo, e.etat
 FROM activite, ControleBat(numact) e
 WHERE numact IN (SELECT * FROM ListActNextWeek());
 
-
+ numact | numb | nbinsc | places | nbdispo |   etat
+--------+------+--------+--------+---------+-----------
+     14 |    1 |      6 |      0 |       2 | OK
+     14 |    2 |      3 |      3 |       2 | INCOMPLET
+     15 |    3 |      5 |      3 |       2 | OK
+     15 |    4 |      2 |      8 |       2 | INCOMPLET
+     15 |    5 |      1 |      6 |       2 | INCOMPLET
+     17 |    6 |      5 |      0 |      14 | OK
+(6 rows)
 
 /*_________________________________________________________________________________________
 
