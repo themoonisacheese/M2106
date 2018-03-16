@@ -11,5 +11,6 @@ SET datestyle to european;
 -- attribution des droits (TP1)
 \i droits.sql
 -- création de fonctions (TP2)
+\i newinsert.sql
 \i procedures.sql
 -- création de triggers (TP3)

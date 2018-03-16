@@ -488,8 +488,89 @@ CREATE OR REPLACE function PrepAnnulation() RETURNS void AS
 --				le numéro de téléphone de chaque membre d'équipage}
 
 $$
+declare
+  act record;
+  statut varchar(30);
+  raison varchar(40);
+  ok int;
+  bateauxannules int[];
+  nbat int;
+  adh record;
+  bat record;
+  nbplein int default 0;
+  i int default 1; -- les arrays commencent a 1.
 begin
+  raise notice '======Activites entre le % et le %=======', (now()+interval '7 days'), (now()+interval '13 days');
+  for act in select * from activite where numact in (select ListActNextWeek()) loop
+    raise notice '*************************';
+    raise notice '% numero % de % a %', act.typeact, act.numact, act.depart, act.arrivee;
+    raise notice 'depart le % - arrivee le %' , act.datedebut, act.datefin;
 
+
+
+    statut := 'MAINTIEN TOTAL';
+    ok := 0;
+    i :=0;
+    nbplein := 0;
+    for bat in select * from ControleBat(act.numact) loop
+      if bat.etat = 'OK' then
+        nbplein := nbplein +1;
+      elsif bat.etat = 'INCOMPLET' then
+        statut := 'MAINTIEN PARTIEL';
+        raison := 'AU MOINS 1 BATEAU INCOMPLET';
+        ok := 1;
+        bateauxannules[i] := bat.numb;
+        i := i+1;
+      end if;
+    end loop;
+
+    if nbplein = 0 and i = 0 then
+      statut := 'ANNULATION TOTALE';
+      raison := 'PAS D''INSCRITS';
+      ok := 2;
+    end if;
+
+    if nbplein = 0 or ((select typeact from activite where numact = act.numact) = 'rallye' and nbplein < 2) then
+      statut := 'ANULATION TOTALE';
+      raison := 'PAS ASSEZ DE BATEAUX PLEINS';
+      ok := 2;
+    end if;
+
+
+
+
+    if ok <> 0 then
+      raise notice '% - MOTIF: %', statut, raison;
+      perform numadh from chefdebord
+                        where numact = act.numact
+                        and numbat = bateauxannules[0];
+      if found then -- si on a des bateaux a annuler
+        raise notice '-----------';
+        raise notice 'Membres a prevenir:';
+        foreach nbat in ARRAY bateauxannules loop
+          select prenom, nom, telephone into adh --d'abord le chef de bord. on reutilise la meme variable apres.
+            from adherent
+            where numadh = (select numadh from chefdebord
+                              where numact = act.numact
+                              and numbat = nbat);
+          raise notice '';
+          raise notice 'membres inscrits sur %', (select nombat from bateau where numbat = nbat);
+          raise notice 'Chef de bord : % % - tel: %', adh.prenom, adh.nom, adh.telephone;
+          raise notice 'Equipage:';
+          for adh in (select prenom, nom, telephone from adherent
+                        where numadh in (select numadh from equipage
+                                          where numact = act.numact
+                                          and numbat = nbat)) loop
+
+            raise notice '* % % - tel: %', adh. prenom, adh.nom, adh.telephone;
+          end loop;
+        end loop; -- rien de plus a faire si annulation totale.
+      end if;
+    else
+      raise notice '%', statut;
+    end if;
+  end loop;
+  return;
 end;
 $$LANGUAGE 'plpgsql';
 

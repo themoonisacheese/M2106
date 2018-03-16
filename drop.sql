@@ -1,6 +1,7 @@
 -- triggers TP3
 
 -- procédures TP2
+drop function if exists PrepAnnulation();
 drop function if exists MonPlanning();
 drop function if exists ControleBat(numa numeric);
 drop function if exists EtatActNextWeek();

@@ -618,8 +618,47 @@ NOTICE:  Toulon - Toulon, du 2018-09-14 au 2018-09-14, sur le bateau le renard
 -- connexion : michal
 --------------------------
 
+based114=> select prepannulation();
+NOTICE:  ======Activites entre le 2018-03-23 13:22:22.720666+01 et le 2018-03-29 13:22:22.720666+02=======
+NOTICE:  *************************
+NOTICE:  sortie numero 14 de ici a là
+NOTICE:  depart le 2018-03-24 - arrivee le 2018-03-26
+NOTICE:  MAINTIEN PARTIEL - MOTIF: AU MOINS 1 BATEAU INCOMPLET
+NOTICE:  -----------
+NOTICE:  Membres a prevenir:
+NOTICE:
+NOTICE:  membres inscrits sur imagine
+NOTICE:  Chef de bord : christian merlu - tel: 0476371852
+NOTICE:  Equipage:
+NOTICE:  * anne boucher - tel: 0476152360
+NOTICE:  * veronique michal - tel: 0476451252
+NOTICE:  *************************
+NOTICE:  rallye numero 15 de ailleurs a autre part
+NOTICE:  depart le 2018-03-26 - arrivee le 2018-03-26
+NOTICE:  ANULATION TOTALE - MOTIF: PAS ASSEZ DE BATEAUX PLEINS
+NOTICE:  -----------
+NOTICE:  Membres a prevenir:
+NOTICE:
+NOTICE:  membres inscrits sur intermède
+NOTICE:  Chef de bord : audrey rondet - tel: 0476527130
+NOTICE:  Equipage:
+NOTICE:  * sylvie crabe - tel: 0476452843
+NOTICE:
+NOTICE:  membres inscrits sur évasion
+NOTICE:  Chef de bord : fabien guy - tel: 0476441250
+NOTICE:  Equipage:
+NOTICE:  *************************
+NOTICE:  sortie numero 16 de loin a plus loin
+NOTICE:  depart le 2018-03-28 - arrivee le 2018-03-28
+NOTICE:  ANULATION TOTALE - MOTIF: PAS ASSEZ DE BATEAUX PLEINS
+NOTICE:  *************************
+NOTICE:  sortie numero 17 de Brest a Brest
+NOTICE:  depart le 2018-03-29 - arrivee le 2018-03-29
+NOTICE:  MAINTIEN TOTAL
+ prepannulation
+----------------
 
--- Appel de la fonction Prepannulation()
+(1 row)
 
 
 
