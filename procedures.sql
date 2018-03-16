@@ -442,8 +442,29 @@ CREATE OR REPLACE function MonPlanning() RETURNS void AS
 --			les informations sont triées par ordre chronologique sur la date de début}
 
 $$
+declare
+act record;
+numb numeric;
 begin
+  raise notice 'Planning de % au %:', (select numadh from VMoi), now();
+  for act in select *
+            from Vactivitesfutures
+            where numact in (select numact from equipage where numadh = (select numadh from VMoi))
+            or numact in (select numact from chefdebord where numadh = (select numadh from VMoi)) loop
+    select numbat into numb
+      from equipage
+      where numact = act.numact
+      and numadh = (select numadh from VMoi);
 
+    if not found then
+      select numbat into numb
+        from chefdebord
+        where numact = act.numact
+        and numadh = (select numadh from VMoi);
+    end if;
+
+    raise notice '% - %, du % au %, sur le bateau %',act.depart, act.arrivee, act.datedebut, act.datefin, (select nombat from bateau where numbat = numb);
+  end loop;
 end;
 $$LANGUAGE 'plpgsql';
 

@@ -581,9 +581,29 @@ WHERE numact IN (SELECT * FROM ListActNextWeek());
 
 -- Affichage du planning de merlu
 
+based114=> select MonPlanning();
+NOTICE:  Planning de 13 au 2018-03-16 08:46:34.411067+01:
+NOTICE:  Monaco - Monaco, du 2018-07-01 au 2018-07-01, sur le bateau rêve des iles
+NOTICE:  Nice - Cannes, du 2018-08-01 au 2018-08-01, sur le bateau le renard
+NOTICE:  Bastia - Ajaccio, du 2018-08-10 au 2018-08-15, sur le bateau cauchemar des mers
+NOTICE:  Toulon - Toulon, du 2018-09-02 au 2018-09-12, sur le bateau évasion
+NOTICE:  Toulon - Toulon, du 2018-09-14 au 2018-09-14, sur le bateau le renard
+ monplanning
+-------------
+
+(1 row)
 
 -- Affichage du planning de limande
+based114=> select MonPlanning();
+NOTICE:  Planning de 17 au 2018-03-16 08:47:17.074944+01:
+NOTICE:  Toulon - Toulon, du 2018-06-15 au 2018-06-15, sur le bateau imagine
+NOTICE:  Monaco - Monaco, du 2018-07-01 au 2018-07-01, sur le bateau rêve des iles
+NOTICE:  Toulon - Toulon, du 2018-09-02 au 2018-09-12, sur le bateau évasion
+NOTICE:  Toulon - Toulon, du 2018-09-14 au 2018-09-14, sur le bateau le renard
+ monplanning
+-------------
 
+(1 row)
 
 --------------------------------------------------------------------------------
 -- Q2 : Préparation de l'annulation d'activités ou de la participation de bateaux
