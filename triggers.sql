@@ -101,7 +101,33 @@ create trigger t_InscriptionEqu before insert or update on equipage
 -- Q3 : Contrôler l'inscription d'un adhérent comme chef de bord
 -- trigger t_InscriptionCdb
 --------------------------------------------------------------------------------
+create function f_inscriptionsCdb() returns trigger
+as  $$
+declare
+dd date;
+df date;
+begin
+	select datedebut,datefin into dd, df from VActivitesFutures
+		where numact = new.numact;
+	if not found then
+		raise exception '(t_InscriptionCdb) l''activite a deja commence ou est terminee.';
+	end if;
+	if not membredispo(new.numadh,dd, df) then
+		raise exception '(t_InscriptionCdb) l''adherent % est soit deja inscrit soit indisponible entre le % et le %', new.numadh, dd, df;
+	end if;
+	if not bateaudispo(new.numbat, dd, df)	then
+		raise exception '(t_InscriptionCdb) le bateau % n''est pas disponible pour l''activite %', new.numbat, new.numact;
+	end if;
+	if (select skipper from adherent where numadh = new.numadh) = 'non' then
+		raise exception '(t_InscriptionCdb) l''adherent % n''est pas skipper.', new.numadh;
+	end if;
+	return new;
+end;
+$$LANGUAGE 'plpgsql';
 
+create trigger t_InscriptionCdb before insert or update on chefdebord
+	for each row
+	execute procedure f_inscriptionsCdb();
 
 /*_________________________________________________________________________________________
 

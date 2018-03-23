@@ -175,20 +175,27 @@ t le 2019-01-01 */
 
 -- Tentative d'inscription de guy (5) comme chef de bord du bateau 3 pour la sortie 1
 INSERT INTO chefdebord values(1,5,3);
+/* ERROR:  (t_InscriptionCdb) l'activite a deja commence ou est terminee.
+CONTEXT:  PL/pgSQL function f_inscriptionscdb() line 9 at RAISE */
 
 -- Tentative d'inscription de guy (5) comme chef de bord du bateau 4 pour le rallye 13
 INSERT INTO chefdebord values(13,5,4);
-
+/* ERROR:  (t_InscriptionCdb) l'adherent 5 est soit deja inscrit soit indisponible entre le 2018-07-01 et
+ le 2018-07-01
+CONTEXT:  PL/pgSQL function f_inscriptionscdb() line 12 at RAISE */
 
 -- Tentative d'inscription de frantz (7) comme chef de bord du bateau 4 pour le rallye 13
 INSERT INTO chefdebord values(13,7,4);
-
+ERROR:  (t_InscriptionCdb) l'adherent 7 n'est pas skipper.
+CONTEXT:  PL/pgSQL function f_inscriptionscdb() line 18 at RAISE
 -- Tentative d'inscription de rondet (10) comme chef de bord du bateau 6 pour l'activité 11
 INSERT INTO chefdebord values(11,10,6);
-
+ERROR:  (t_InscriptionCdb) le bateau 6 n'est pas disponible pour l'activite 11
+CONTEXT:  PL/pgSQL function f_inscriptionscdb() line 15 at RAISE
 -- Inscription de rondet (10) comme chef de bord du bateau 5 pour l'activité 11
 INSERT INTO chefdebord values(11,10,5);
-
+NOTICE:  INSERT sur chefdebord
+INSERT 0 1
 
 /*_________________________________________________________________________________________
 
