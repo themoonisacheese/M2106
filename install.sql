@@ -14,3 +14,4 @@ SET datestyle to european;
 \i newinsert.sql
 \i procedures.sql
 -- création de triggers (TP3)
+\i triggers.sql

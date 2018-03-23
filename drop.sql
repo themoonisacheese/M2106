@@ -1,5 +1,13 @@
 -- triggers TP3
-
+drop trigger if exists t_skipperforlife on adherent;
+drop function if exists f_skipfl();
+drop trigger if exists t_notification on adherent;
+drop trigger if exists t_notification on activite;
+drop trigger if exists t_notification on equipage;
+drop trigger if exists t_notification on chefdebord;
+drop trigger if exists t_notification on regate;
+drop trigger if exists t_notification on resultat;
+drop function if exists f_notif();
 -- procédures TP2
 drop function if exists PrepAnnulation();
 drop function if exists MonPlanning();
