@@ -71,7 +71,7 @@ create trigger t_SkipperForLife before UPDATE
 -- Q2 : Contrôler l'inscription d'un adhérent comme membre d'équipage
 -- trigger t_InscriptionEqu
 --------------------------------------------------------------------------------
-create function f_inscriptionsEqu() returns trigger as
+create or replace function f_inscriptionsEqu() returns trigger as
 $$
 	declare
 	dd date;
@@ -85,7 +85,7 @@ $$
 		if not membredispo(new.numadh,dd, df) then
 			raise exception '(t_InscriptionEqu) l''adherent % est soit deja inscrit soit indisponible entre le % et le %', new.numadh, dd, df;
 		end if;
-		if (select nbdispo from controlebat(new.numact) where numb = new.numbat) = 0	then
+		if (select places from controlebat(new.numact) where numb = new.numbat) = 0	then
 			raise exception '(t_InscriptionEqu) le bateau % est complet pour l''activite %', new.numbat, new.numact;
 		end if;
 		return new;

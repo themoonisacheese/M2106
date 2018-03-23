@@ -101,8 +101,8 @@ INSERT INTO equipage values(1,19,1);
 CONTEXT:  PL/pgSQL function f_inscriptionsequ() line 9 at RAISE*/
 -- Inscription de crabe(19) sur le bateau 2 pour le rallye 12
 INSERT INTO equipage values(12,19,2);
-NOTICE:  INSERT sur equipage
-INSERT 0 1
+/* NOTICE:  INSERT sur equipage
+INSERT 0 1 */
 -- Tentative d'inscription de guy(5) comme membre d'équipage sur le bateau 3 pour la sortie 9
 INSERT INTO equipage values(9,5,3);
 
@@ -114,12 +114,12 @@ CONTEXT:  PL/pgSQL function f_inscriptionsequ() line 12 at RAISE */
 -- Création d'une nouvelle activité pour le réveillon 2018
 SET datestyle TO european;
 INSERT INTO VactivitesFutures VALUES ((SELECT max(numact) FROM activite) + 1, 'sortie','Marseille','Marseille','31/12/2018','1/01/2019');
-INSERT 0 1
+/* INSERT 0 1 */
 
 -- Inscription de merlu(13) comme chef de bord sur le bateau 4
 INSERT INTO chefdebord VALUES ((SELECT max(numact) FROM activite),13,4);
-NOTICE:  INSERT sur chefdebord
-INSERT 0 1
+/* NOTICE:  INSERT sur chefdebord
+INSERT 0 1 */
 -- Inscription des équipiers 10 à 17 sur le bateau de merlu
 INSERT INTO equipage
 	SELECT (SELECT max(numact) FROM activite), numadh, 4 FROM adherent WHERE numadh between 10 and 17;
@@ -155,9 +155,10 @@ INSERT 0 8
 
 -- Inscription de l'équipier 10
 INSERT INTO equipage VALUES ((SELECT max(numact) FROM activite), 10, 4);
-NOTICE:  INSERT sur equipage
-INSERT 0 1
 
+/* ERROR:  (t_InscriptionEqu) l'adherent 10 est soit deja inscrit soit indisponible entre le 2018-12-31 e
+t le 2019-01-01 */
+/* CONTEXT:  PLpgSQL function f_inscriptionsequ() line 12 at RAISE */
 --------------------------------------------------------------------------------
 -- Q3 : Contrôler l'inscription d'un adhérent comme chef de bord
 --------------------------------------------------------------------------------
