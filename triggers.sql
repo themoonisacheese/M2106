@@ -62,7 +62,7 @@ as $$
 $$LANGUAGE 'plpgsql';
 
 
-create trigger t_SkiperForLife before UPDATE
+create trigger t_SkipperForLife before UPDATE
 	on adherent
 	for each row
 	execute procedure f_skipfl();
@@ -71,7 +71,30 @@ create trigger t_SkiperForLife before UPDATE
 -- Q2 : Contrôler l'inscription d'un adhérent comme membre d'équipage
 -- trigger t_InscriptionEqu
 --------------------------------------------------------------------------------
+create function f_inscriptionsEqu() returns trigger as
+$$
+	declare
+	dd date;
+	df date;
+	begin
+		select datedebut,datefin into dd, df from VActivitesFutures
+			where numact = new.numact;
+		if not found then
+			raise exception '(t_InscriptionEqu) l''activite a deja commence ou est terminee.';
+		end if;
+		if not membredispo(new.numadh,dd, df) then
+			raise exception '(t_InscriptionEqu) l''adherent % est soit deja inscrit soit indisponible entre le % et le %', new.numadh, dd, df;
+		end if;
+		if (select nbdispo from controlebat(new.numact) where numb = new.numbat) = 0	then
+			raise exception '(t_InscriptionEqu) le bateau % est complet pour l''activite %', new.numbat, new.numact;
+		end if;
+		return new;
+	end;
+$$LANGUAGE 'plpgsql';
 
+create trigger t_InscriptionEqu before insert or update on equipage
+	for each row
+	execute procedure f_inscriptionsEqu();
 
 
 --------------------------------------------------------------------------------

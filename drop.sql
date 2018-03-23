@@ -1,4 +1,6 @@
 -- triggers TP3
+drop trigger if exists t_InscriptionEqu on equipage;
+drop function if exists f_inscriptionsEqu();
 drop trigger if exists t_skipperforlife on adherent;
 drop function if exists f_skipfl();
 drop trigger if exists t_notification on adherent;

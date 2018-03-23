@@ -52,26 +52,35 @@ ________________________________________________________________________________
 
 -- Tentative de modification de l'agrément de Merlu
 UPDATE adherent SET skipper = 'non' WHERE nom = 'merlu';
-
+ERROR:  (t_skipperforlife) Un skipper ne peut pas perdre son agrement!
+CONTEXT:  PL/pgSQL function f_skipfl() line 4 at RAISE
 -- Pourquoi le trigger t_Notification ne s'est-il pas déclenché ?
 -- A COMPLETER...
-
+  notre trigger a interrompu l'execution de l'operation avec une exception, et il s'execute avant le trigger precedent'
 
 
 -- Félicitations : Morue a reçu son agrément de skipper !!!
 UPDATE adherent SET skipper = 'oui' WHERE nom = 'morue';
-
+NOTICE:  UPDATE sur adherent
+UPDATE 1
 
 -- Merlu a changé d'adresse : nouvelle adresse "bord de mer'
 UPDATE adherent SET adresse = 'bord de mer' WHERE nom = 'merlu';
-
+NOTICE:  UPDATE sur adherent
+UPDATE 1
 -- Limande a changé de numéro dé téléphone
 UPDATE adherent SET telephone = '0607080910' WHERE nom = 'limande';
-
+NOTICE:  UPDATE sur adherent
+UPDATE 1
 
 -- Vérifications :
 SELECT * FROM adherent WHERE nom in ('merlu', 'morue', 'limande');
-
+ numadh |   nom   |  prenom   | fonction |   adresse   | telephone  | skipper | anneeadh
+--------+---------+-----------+----------+-------------+------------+---------+----------
+     15 | morue   | dominique | autre    | grenoble    | 0476349725 | oui     |     2017
+     13 | merlu   | christian | autre    | bord de mer | 0476371852 | oui     |     2017
+     17 | limande | thierry   | autre    | voiron      | 0607080910 | non     |     2017
+(3 rows)
 --------------------------------------------------------------------------------
 -- Q2 : Contrôler l'inscription d'un adhérent comme membre d'équipage
 --------------------------------------------------------------------------------
@@ -88,46 +97,66 @@ SELECT * FROM adherent WHERE nom in ('merlu', 'morue', 'limande');
 
 -- Tentative d'inscription de crabe(19) sur le bateau 1 pour la sortie 1
 INSERT INTO equipage values(1,19,1);
-
+/* ERROR:  (t_InscriptionEqu) l'activite a deja commence ou est terminee.
+CONTEXT:  PL/pgSQL function f_inscriptionsequ() line 9 at RAISE*/
 -- Inscription de crabe(19) sur le bateau 2 pour le rallye 12
 INSERT INTO equipage values(12,19,2);
-
+NOTICE:  INSERT sur equipage
+INSERT 0 1
 -- Tentative d'inscription de guy(5) comme membre d'équipage sur le bateau 3 pour la sortie 9
 INSERT INTO equipage values(9,5,3);
 
 -- Tentative d'inscription de frantz (7) sur le bateau 6 pour la sortie 11
 INSERT INTO equipage values(11,7,6);
-
+/* ERROR:  (t_InscriptionEqu) l'adherent 5 est soit deja inscrit soit indisponible entre le 2018-09-14 et
+ le 2018-09-14
+CONTEXT:  PL/pgSQL function f_inscriptionsequ() line 12 at RAISE */
 -- Création d'une nouvelle activité pour le réveillon 2018
 SET datestyle TO european;
 INSERT INTO VactivitesFutures VALUES ((SELECT max(numact) FROM activite) + 1, 'sortie','Marseille','Marseille','31/12/2018','1/01/2019');
+INSERT 0 1
 
 -- Inscription de merlu(13) comme chef de bord sur le bateau 4
 INSERT INTO chefdebord VALUES ((SELECT max(numact) FROM activite),13,4);
-
+NOTICE:  INSERT sur chefdebord
+INSERT 0 1
 -- Inscription des équipiers 10 à 17 sur le bateau de merlu
 INSERT INTO equipage
 	SELECT (SELECT max(numact) FROM activite), numadh, 4 FROM adherent WHERE numadh between 10 and 17;
-
+/* ERROR:  (t_InscriptionEqu) l'adherent 13 est soit deja inscrit soit indisponible entre le 2018-12-31 e
+t le 2019-01-01
+CONTEXT:  PL/pgSQL function f_inscriptionsequ() line 12 at RAISE */
 /*
  OUPS!!! Effectivement, l'adhérent 13, c'est merlu et il est déjà inscrit comme chef de bord pour cette activité !
  Mais est-ce que les autres membres ont été inscrits ?
 */
 SELECT * FROM equipage WHERE numact = 14;
-
+ numact | numadh | numbat
+--------+--------+--------
+     14 |     14 |      1
+     14 |     15 |      1
+     14 |     16 |      1
+     14 |     17 |      1
+     14 |     18 |      1
+     14 |      3 |      2
+     14 |      4 |      2
+(7 rows)
 -- Apparemment non... Pourquoi ?
--- A COMPLETER...
+-- parce que on a verifie tous les tuples avant d'effectuer l'operation.
+-- si l'un deux est invalide, l'operation est anullee.
 
 
 
 -- Rectification : inscription des équipiers 1 à 8 sur le bateau de merlu
 INSERT INTO equipage
 	SELECT (SELECT max(numact) FROM activite), numadh, 4 FROM adherent WHERE numadh between 1 and 8;
-
+NOTICE:  INSERT sur equipage
+INSERT 0 8
 
 -- Inscription de l'équipier 10
 INSERT INTO equipage VALUES ((SELECT max(numact) FROM activite), 10, 4);
-
+NOTICE:  INSERT sur equipage
+INSERT 0 1
 
 --------------------------------------------------------------------------------
 -- Q3 : Contrôler l'inscription d'un adhérent comme chef de bord
