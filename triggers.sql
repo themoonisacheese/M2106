@@ -189,6 +189,42 @@ create trigger t_NewAct instead of insert on VActivitesFutures
 -- Q2 : Contrôler la mise à jour d'une activité future
 -- trigger t_UpdAct
 --------------------------------------------------------------------------------
+create function f_UpdAct() returns trigger as
+$$
+begin
+
+	if new.datedebut <> old.datedebut or new.datefin <> old.datefin then
+		if (select count(*) from chefdebord where numact = old.numact)>0 then
+			raise exception '(t_UpdAct) impossible de modifier: des membres sont inscrits';
+		end if;
+		if new.typeact = 'sortie' then
+			if not(SortiePossible(new.datedebut, new.datefin)) then
+				raise exception '(t_UpdAct) impossible de prevoir une sortie du % au %', new.datedebut, new.datefin;
+			end if;
+		else
+			if not(RallyePossible(new.datedebut, new.datefin)) then
+				raise exception '(t_UpdAct) impossible de prevoir un rallye du % au %', new.datedebut, new.datefin;
+			end if;
+		end if;
+	end if;
+
+	if new.datedebut < now() + interval '7 days' then
+		raise exception '(t_UpdAct) on ne peut pas modifier une activite debutant dans moins de 7 jours!';
+	end if;
+
+	update activite set
+		typeact = new.typeact, depart = new.depart,
+		arrivee = new.arrivee, datedebut = new.datedebut,
+		datefin = new.datefin
+		where numact = old.numact;
+
+	return null;
+end;
+$$LANGUAGE 'plpgsql';
+
+create trigger t_UpdAct instead of update on VActivitesFutures
+	for each row
+	execute procedure f_UpdAct();
 
 
 

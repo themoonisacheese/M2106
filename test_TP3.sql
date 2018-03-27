@@ -299,7 +299,6 @@ based114=> SELECT * FROM regate WHERE numact = 18;
 (3 rows)
 -- * affichage de resultat pour l'activité 18
 SELECT * FROM resultat WHERE numact = 18;
-
  numbat | numact | numregate | classement | points
 --------+--------+-----------+------------+--------
       5 |     18 |         1 |            |
@@ -309,6 +308,7 @@ SELECT * FROM resultat WHERE numact = 18;
       5 |     18 |         3 |            |
       2 |     18 |         3 |            |
 (6 rows)
+
 
 --------------------------------------------------------------------------------
 -- Q2 : Contrôler la mise à jour d'une activité future
@@ -327,15 +327,20 @@ SELECT * FROM resultat WHERE numact = 18;
 
 -- Modification du port d'arrivée de l'activité 14
 UPDATE VActivitesFutures SET arrivee = 'Brest' WHERE numact = 14;
-
+NOTICE:  UPDATE sur activite
+UPDATE 0
 
 -- Vérification : affichage de la vue VActivitesFutures
 SELECT * FROM VActivitesFutures WHERE numact = 14;
-
+ numact | typeact | depart | arrivee | datedebut  |  datefin
+--------+---------+--------+---------+------------+------------
+     14 | sortie  | ici    | Brest   | 2018-04-04 | 2018-04-06
+(1 row)
 -- Modification des dates du rallye 15 : report d'une semaine
 UPDATE VActivitesFutures SET datedebut = datedebut+7, datefin = datefin+7
 WHERE numact = 15;
-
+ERROR:  (t_UpdAct) impossible de modifier: des membres sont inscrits
+CONTEXT:  PL/pgSQL function f_updact() line 6 at RAISE
 
 -- Les membres prévus pour l'activité "réveillon" ne sont pas d'accord pour arriver à Brest : ils se désinscrivent
 -- en masse (chef de bord compris)
@@ -346,13 +351,16 @@ DELETE FROM chefdebord WHERE numact = 14;
 -- Tentative de reprogrammer l'activité 14 pour la fin du carnaval de Dunkerque qui a lieu cette année
 -- jusqu'au 8 avril
 UPDATE VActivitesFutures SET datedebut = current_date+5, datefin = '8/04/2018' WHERE numact = 14;
-
+ERROR:  (t_UpdAct) on ne peut pas modifier une activite debutant dans moins de 7 jours!
+CONTEXT:  PL/pgSQL function f_updact() line 20 at RAISE
 -- Nouvelle tentative de reprogrammation du 13 au 16 septembre
 UPDATE VActivitesFutures SET datedebut = '13/09/2018', datefin = '16/09/2018' WHERE numact = 14;
-
+ERROR:  (t_UpdAct) impossible de prevoir une sortie du 2018-09-13 au 2018-09-16
+CONTEXT:  PL/pgSQL function f_updact() line 10 at RAISE
 -- Ultime tentative de reprogrommation du 13 au 16 août 2018
 UPDATE VActivitesFutures SET datedebut = '13/08/2018', datefin = '16/08/2018' WHERE numact = 14;
-
+NOTICE:  UPDATE sur activite
+UPDATE 0
 
 
 --------------------------------------------------------------------------------
