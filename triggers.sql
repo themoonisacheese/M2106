@@ -150,12 +150,40 @@ begin
 	nb_eq := (SELECT count(*) FROM adherent WHERE membredispo(numadh, dd, df)) -2; -- on enlève les skippers...
 	return nb_bat >= 2 and nb_skip >= 2 and nb_eq >= 8;
 end $$ language 'plpgsql';
+
 -----------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Q1 : Contrôler la possibilité de créer une activité future
 -- trigger t_NewAct
 --------------------------------------------------------------------------------
+create function f_NewAct() returns trigger as
+$$
+begin
 
+	if new.typeact = 'sortie' then
+		if not(SortiePossible(new.datedebut, new.datefin)) then
+			raise exception '(t_NewAct) impossible de prevoir une sortie du % au %', new.datedebut, new.datefin;
+		end if;
+	else
+		if not(RallyePossible(new.datedebut, new.datefin)) then
+			raise exception '(t_NewAct) impossible de prevoir un rallye du % au %', new.datedebut, new.datefin;
+		end if;
+	end if;
+
+	if new.datedebut < now() + interval '7 days' then
+		raise exception '(t_NewAct) on ne peut pas creer une activite debutant dans moins de 7 jours!';
+	end if;
+
+	select count(*)+1 into new.numact from activite;
+
+	insert into activite select new.*;
+	return null;
+end;
+$$LANGUAGE 'plpgsql';
+
+create trigger t_NewAct instead of insert on VActivitesFutures
+	for each row
+	execute procedure f_NewAct();
 
 --------------------------------------------------------------------------------
 -- Q2 : Contrôler la mise à jour d'une activité future

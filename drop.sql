@@ -1,4 +1,6 @@
 -- triggers TP3
+drop trigger if exists t_NewAct on VActivitesFutures;
+drop function if exists f_NewAct();
 drop trigger if exists t_InscriptionCdb on chefdebord;
 drop function if exists f_inscriptionsCdb();
 drop trigger if exists t_InscriptionEqu on equipage;

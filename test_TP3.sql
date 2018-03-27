@@ -221,55 +221,94 @@ ________________________________________________________________________________
 
 -- Tentative d'insertion dans la table VActivitesFutures d'une sortie au départ de Brest et arrivant à Concarneau sur la journée du 1/01/2018
 INSERT INTO VActivitesFutures values(null,'sortie','Brest','Concarneau','1/01/2018','1/01/2018');
-
+ERROR:  (t_NewAct) on ne peut pas creer une activite debutant dans moins de 7 jours!
+CONTEXT:  PL/pgSQL function f_newact() line 15 at RAISE
 
 -- Insertion d'un rallye au départ de Brest et arrivant à Concarneau sur la journée du 14/09/2018
 SET DATESTYLE TO european;
 INSERT INTO VActivitesFutures values (null,'rallye','Brest','Concarneau','14/09/2018','14/09/2018');
-
+ERROR:  (t_NewAct) impossible de prevoir un rallye du 2018-09-14 au 2018-09-14
+CONTEXT:  PL/pgSQL function f_newact() line 10 at RAISE
 
 -- Insertion d'un rallye au départ de Brest et arrivant à Concarneau sur la journée du 14/08/2019
 INSERT INTO VActivitesFutures values (null,'rallye','Brest','Concarneau','14/08/2019','14/08/2019');
+/* NOTICE:  INSERT sur activite
+INSERT 0 0 */
 
+-- Inscription de merlu(13) comme chef de bord sur le bateau évasion(5) pour cette activité (18)
+INSERT INTO chefdebord VALUES(18,13,5);
 
--- Inscription de merlu(13) comme chef de bord sur le bateau évasion(5) pour cette activité (15)
-INSERT INTO chefdebord VALUES(15,13,5);
-
--- Inscription de aflau(1) comme chef de bord sur le bateau imagine(2) pour cette activité (15)
-INSERT INTO chefdebord VALUES(15,1,2);
+-- Inscription de aflau(1) comme chef de bord sur le bateau imagine(2) pour cette activité (18)
+INSERT INTO chefdebord VALUES(18,1,2);
 
 -- Inscription des équipiers 2 à 5 sur le bateau de aflau
 INSERT INTO equipage
-	SELECT 15, numadh, 2 FROM adherent WHERE numadh between 2 and 5;
+	SELECT 18, numadh, 2 FROM adherent WHERE numadh between 2 and 5;
 
 -- Inscription des équipiers 14 à 17 sur le bateau de merlu
 INSERT INTO equipage
-	SELECT 15, numadh, 5 FROM adherent WHERE numadh between 14 and 17;
+	SELECT 18, numadh, 5 FROM adherent WHERE numadh between 14 and 17;
 
--- Création de 3 régates pour l'activité 15
-SELECT * FROM InsRegates(15,3);
+-- Création de 3 régates pour l'activité 18
+SELECT * FROM InsRegates(18,3);
 
 -- Insertion des lignes nécessaires dans la table résultat pour cette activité
 INSERT INTO resultat
-	SELECT numbat, 15, numregate
-	FROM chefdebord c, regate r WHERE c.numact= 15 and c.numact = r.numact;
+	SELECT numbat, 18, numregate
+	FROM chefdebord c, regate r WHERE c.numact= 18 and c.numact = r.numact;
 
 -- Vérifications : utiles pour la question C3
 -- * affichage de la vue VActivitesFutures
 SELECT * FROM VActivitesFutures;
+ numact | typeact |   depart   |  arrivee   | datedebut  |  datefin
+--------+---------+------------+------------+------------+------------
+     14 | sortie  | ici        | là         | 2018-04-04 | 2018-04-06
+     15 | rallye  | ailleurs   | autre part | 2018-04-06 | 2018-04-06
+     16 | sortie  | loin       | plus loin  | 2018-04-08 | 2018-04-08
+     17 | sortie  | Brest      | Brest      | 2018-04-09 | 2018-04-09
+      8 | rallye  | Toulon     | Toulon     | 2018-06-15 | 2018-06-15
+     13 | rallye  | Monaco     | Monaco     | 2018-07-01 | 2018-07-01
+     12 | rallye  | Nice       | Cannes     | 2018-08-01 | 2018-08-01
+     11 | sortie  | Bastia     | Ajaccio    | 2018-08-10 | 2018-08-15
+      6 | sortie  | Toulon     | Toulon     | 2018-09-02 | 2018-09-12
+     10 | sortie  | Macinaggio | Centuri    | 2018-09-14 | 2018-09-14
+      9 | sortie  | Brest      | Concarneau | 2018-09-14 | 2018-09-14
+      7 | sortie  | Toulon     | Toulon     | 2018-09-14 | 2018-09-14
+     18 | rallye  | Brest      | Concarneau | 2019-08-14 | 2019-08-14
+(13 rows)
 
--- * affichage de chefdebord pour l'activité 15
-SELECT * FROM chefdebord WHERE numact = 15;
+(END)
 
--- * affichage de equipage pour l'activité 15
+-- * affichage de chefdebord pour l'activité 18
+SELECT * FROM chefdebord WHERE numact = 18;
+ numact | numadh | numbat
+--------+--------+--------
+     18 |     13 |      5
+     18 |      1 |      2
+(2 rows)
+-- * affichage de equipage pour l'activité 18
 
--- * affichage de regate pour l'activité 15
-SELECT * FROM regate WHERE numact = 15;
+-- * affichage de regate pour l'activité 18
+SELECT * FROM regate WHERE numact = 18;
+based114=> SELECT * FROM regate WHERE numact = 18;
+ numact | numregate | forcevent
+--------+-----------+-----------
+     18 |         1 |
+     18 |         2 |
+     18 |         3 |
+(3 rows)
+-- * affichage de resultat pour l'activité 18
+SELECT * FROM resultat WHERE numact = 18;
 
--- * affichage de resultat pour l'activité 15
-SELECT * FROM resultat WHERE numact = 15;
-
-
+ numbat | numact | numregate | classement | points
+--------+--------+-----------+------------+--------
+      5 |     18 |         1 |            |
+      2 |     18 |         1 |            |
+      5 |     18 |         2 |            |
+      2 |     18 |         2 |            |
+      5 |     18 |         3 |            |
+      2 |     18 |         3 |            |
+(6 rows)
 
 --------------------------------------------------------------------------------
 -- Q2 : Contrôler la mise à jour d'une activité future

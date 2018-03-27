@@ -46,3 +46,33 @@ INSERT INTO chefdebord VALUES((SELECT max(numact) FROM activite),10,6);
 
 INSERT INTO equipage SELECT
 	(SELECT max(numact) FROM activite), numadh, 6 FROM adherent WHERE numadh between 1 and 4;
+
+
+
+
+
+INSERT INTO VActivitesFutures values (null,'rallye','Brest','Concarneau','14/08/2019','14/08/2019');
+/* NOTICE:  INSERT sur activite
+INSERT 0 0 */
+
+-- Inscription de merlu(13) comme chef de bord sur le bateau évasion(5) pour cette activité (18)
+INSERT INTO chefdebord VALUES(18,13,5);
+
+-- Inscription de aflau(1) comme chef de bord sur le bateau imagine(2) pour cette activité (18)
+INSERT INTO chefdebord VALUES(18,1,2);
+
+-- Inscription des équipiers 2 à 5 sur le bateau de aflau
+INSERT INTO equipage
+	SELECT 18, numadh, 2 FROM adherent WHERE numadh between 2 and 5;
+
+-- Inscription des équipiers 14 à 17 sur le bateau de merlu
+INSERT INTO equipage
+	SELECT 18, numadh, 5 FROM adherent WHERE numadh between 14 and 17;
+
+-- Création de 3 régates pour l'activité 18
+SELECT * FROM InsRegates(18,3);
+
+-- Insertion des lignes nécessaires dans la table résultat pour cette activité
+INSERT INTO resultat
+	SELECT numbat, 18, numregate
+	FROM chefdebord c, regate r WHERE c.numact= 18 and c.numact = r.numact;
