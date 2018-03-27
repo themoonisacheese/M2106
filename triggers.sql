@@ -92,7 +92,7 @@ $$
 	end;
 $$LANGUAGE 'plpgsql';
 
-create trigger t_InscriptionEqu before insert or update on equipage
+create trigger t_InscriptionEqu before insert on equipage
 	for each row
 	execute procedure f_inscriptionsEqu();
 
@@ -125,7 +125,7 @@ begin
 end;
 $$LANGUAGE 'plpgsql';
 
-create trigger t_InscriptionCdb before insert or update on chefdebord
+create trigger t_InscriptionCdb before insert on chefdebord
 	for each row
 	execute procedure f_inscriptionsCdb();
 
@@ -232,6 +232,22 @@ create trigger t_UpdAct instead of update on VActivitesFutures
 -- Q3 : Contrôler la suppression d'une activité future
 -- triggre t_DelAct
 --------------------------------------------------------------------------------
+create function f_DelAct() returns trigger as
+$$
+begin
+	delete from resultat where numact = old.numact;
+	delete from regate where numact = old.numact;
+	delete from equipage where numact = old.numact;
+	delete from chefdebord where numact = old.numact;
+	delete from activite where numact = old.numact;
+	return null;
+end;
+$$LANGUAGE 'plpgsql';
+
+create trigger t_DelAct instead of delete on VActivitesFutures
+	for each row
+	execute procedure f_DelAct();
+
 
 
 
@@ -320,3 +336,27 @@ FOR EACH ROW execute procedure f_beforeMAJCdb();
 -- 2 : Actions effectuées APRES mise à jour d'un numéro de bateau dans chef de bord
 -- trigger t_afterMAJCdb
 --------------------------------------------------------------------------------------------*/
+create function f_afterMAJCdb() returns trigger as
+$$
+declare
+	equ int;
+begin
+	if old.numbat <> new.numbat then
+		for equ in (select * from SauvEquipiers) loop
+			insert into equipage values(new.numact, equ, new.numbat);
+			if (select typeact from activite where numact = new.numact) = 'rallye' then
+				/* INSERT INTO resultat -- CET INSERT N'EST APPAREMMENT PAS NECESSAIRE
+					SELECT new.numbat, new.numact, numregate
+					from regate
+					where numact = new.numact; */
+			end if;
+		end loop;
+		drop table SauvEquipiers;
+	end if;
+	return new;
+end;
+$$LANGUAGE 'plpgsql';
+
+create trigger t_afterMAJCdb after update on chefdebord
+	for each row
+	execute procedure f_afterMAJCdb();

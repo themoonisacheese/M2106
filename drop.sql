@@ -1,4 +1,10 @@
 -- triggers TP3
+drop trigger if exists t_afterMAJCdb on chefdebord;
+drop function if exists f_afterMAJCdb();
+drop trigger if exists t_beforeMAJCdb on chefdebord;
+drop function if exists f_beforeMAJCdb();
+drop trigger if exists t_DelAct on VActivitesFutures;
+drop function if exists f_DelAct();
 drop trigger if exists t_UpdAct on VActivitesFutures;
 drop function if exists f_UpdAct();
 drop trigger if exists t_NewAct on VActivitesFutures;

@@ -379,12 +379,26 @@ UPDATE 0
 ------------------------
 
 -- Annulation du rallye 15
-DELETE FROM VActivitesFutures WHERE numact = 15;
+DELETE FROM VActivitesFutures WHERE numact = 18;
 
 
 -- Vérification : affichage des activités futures
 SELECT * FROM VActivitesFutures;
-
+ numact | typeact |   depart   |  arrivee   | datedebut  |  datefin
+--------+---------+------------+------------+------------+------------
+     14 | sortie  | ici        | là         | 2018-04-04 | 2018-04-06
+     15 | rallye  | ailleurs   | autre part | 2018-04-06 | 2018-04-06
+     16 | sortie  | loin       | plus loin  | 2018-04-08 | 2018-04-08
+     17 | sortie  | Brest      | Brest      | 2018-04-09 | 2018-04-09
+      8 | rallye  | Toulon     | Toulon     | 2018-06-15 | 2018-06-15
+     13 | rallye  | Monaco     | Monaco     | 2018-07-01 | 2018-07-01
+     12 | rallye  | Nice       | Cannes     | 2018-08-01 | 2018-08-01
+     11 | sortie  | Bastia     | Ajaccio    | 2018-08-10 | 2018-08-15
+      6 | sortie  | Toulon     | Toulon     | 2018-09-02 | 2018-09-12
+     10 | sortie  | Macinaggio | Centuri    | 2018-09-14 | 2018-09-14
+      9 | sortie  | Brest      | Concarneau | 2018-09-14 | 2018-09-14
+      7 | sortie  | Toulon     | Toulon     | 2018-09-14 | 2018-09-14
+(12 rows)
 
 
 /*_________________________________________________________________________________________
@@ -436,46 +450,97 @@ ________________________________________________________________________________
 
 -- rondet(10) peut-il remplacer merlu(13) pour l'activité 6 ?
 UPDATE chefdebord set numadh = 10 WHERE numact = 6 and numadh = 13;
-
+ERROR:  (trigger t_beforeMAJCdb) L''adhérent numéro 10 est soit déjà inscrit, soit non disponible entre
+ le 2018-09-02 et le 2018-09-12
+CONTEXT:  PL/pgSQL function f_beforemajcdb() line 18 at RAISE
 
 -- Le mariage de la fille de merlu est avancé au 15 août
 -- Est-ce que limande (17) pourrait remplacer merlu pour l'activité 11 qui se déroule du 8 au 15 août ?
 UPDATE chefdebord set numadh = 17 WHERE numact = 11 and numadh = 13;
-
+ERROR:  (trigger t_beforeMAJCdb) L'adhérent numéro 17 n'est pas skipper, il ne peut donc pas être chef
+ de bord
+CONTEXT:  PL/pgSQL function f_beforemajcdb() line 14 at RAISE
 
 -- Est-ce que morue pourrait le remplacer ?
 UPDATE chefdebord set numadh = (SELECT numadh FROM adherent WHERE nom = 'morue')
-WHERE numact = 11 and numadh = 13;
-
+WHERE numact = 12 and numadh = 13;
+NOTICE:  UPDATE sur chefdebord
+UPDATE 0
 
 -- B - Remplacement d'un bateau : avarie du bateau imagine(2) qui ne pourra pas naviguer avant l'hiver...
 
 -- Le bateau 2 est-il prévu pour des activités futures ?
 SELECT * FROM VActivitesFutures WHERE numact in (SELECT numact FROM chefdebord WHERE numbat = 2);
-
+ numact | typeact | depart | arrivee | datedebut  |  datefin
+--------+---------+--------+---------+------------+------------
+     14 | sortie  | ici    | là      | 2018-04-04 | 2018-04-06
+      8 | rallye  | Toulon | Toulon  | 2018-06-15 | 2018-06-15
+     13 | rallye  | Monaco | Monaco  | 2018-07-01 | 2018-07-01
+     12 | rallye  | Nice   | Cannes  | 2018-08-01 | 2018-08-01
+      7 | sortie  | Toulon | Toulon  | 2018-09-14 | 2018-09-14
+(5 rows)
 -- Quels sont les chefs de bord inscrits sur le bateau 2 pour le rallye 13 ?
 SELECT numadh FROM chefdebord WHERE numact = 13 and numbat = 2;
-
+ numadh
+--------
+      1
+(1 row)
 -- Quels sont les équipiers inscrits sur le bateau 2 pour le rallye 13 ?
 SELECT numadh FROM equipage WHERE numact = 13 and numbat = 2 ORDER BY numadh;
-
+ numadh
+--------
+      2
+      3
+      4
+      5
+(4 rows)
 -- Y a-t-il des lignes dans la table résultat pour le rallye 13 ?
 SELECT * FROM resultat WHERE numact = 13 ORDER BY numregate, numbat;
-
+  numbat | numact | numregate | classement | points
+--------+--------+-----------+------------+--------
+      2 |     13 |         1 |            |
+      3 |     13 |         1 |            |
+      2 |     13 |         2 |            |
+      3 |     13 |         2 |            |
+(4 rows)
 -- Tentative de remplacement du bateau 2 par le bateau 3 pour le rallye 13
 UPDATE chefdebord set numbat = 3 WHERE numact = 13 and numbat = 2;
-
+ERROR:  (trigger t_beforeMAJCdb) Le bateau 3 est soit déjà utilisé, soit non disponible entre le 2018-
+07-01 et le 2018-07-01
+CONTEXT:  PL/pgSQL function f_beforemajcdb() line 25 at RAISE
 -- Nouvel essai avec le bateau 1
 UPDATE chefdebord set numbat = 1 WHERE numact = 13 and numbat = 2;
-
+NOTICE:  DELETE sur equipage
+NOTICE:  DELETE sur resultat
+NOTICE:  INSERT sur equipage
+NOTICE:  INSERT sur equipage
+NOTICE:  INSERT sur equipage
+NOTICE:  INSERT sur equipage
+NOTICE:  UPDATE sur chefdebord
+UPDATE 1
 -- L'équipage initialement inscrit sur le bateau 3 est-il maintenant inscrit sur le bateau 1 pour le rallye 13 ?
 SELECT numadh FROM equipage WHERE numact = 13 and numbat = 1 ORDER BY numadh;
-
+ numadh
+--------
+      2
+      3
+      4
+      5
+(4 rows)
 -- Vérification du contenu de la table resultat pour le rallye 13...
 SELECT * FROM resultat WHERE numact = 13 ORDER BY numregate, numbat;
-
+ numbat | numact | numregate | classement | points
+--------+--------+-----------+------------+--------
+      3 |     13 |         1 |            |
+      3 |     13 |         2 |            |
+(2 rows)
 -- Remplacement du bateau 2 par le bateau 4 pour l'activité 7
 UPDATE chefdebord set numbat = 4 WHERE numact = 7 and numbat = 2;
-
+NOTICE:  DELETE sur equipage
+NOTICE:  DELETE sur resultat
+NOTICE:  INSERT sur equipage
+NOTICE:  INSERT sur equipage
+NOTICE:  UPDATE sur chefdebord
+UPDATE 1
 
 -- THE END!!!
